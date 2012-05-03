@@ -1,0 +1,6 @@
+<xproc-config xmlns="http://xmlcalabash.com/ns/configuration"
+              xmlns:ltx="http://le-tex.de/tools/unzip">
+
+   <implementation type="ltx:unzip-files" class-name="UnZip"/>
+
+</xproc-config>
