@@ -11,7 +11,7 @@
 <ltx:unzip-files>
     <p:input port="source">
 	<p:inline>
-	  <c:unzip href="hello-world.zip" file="pics/world.jpg"/>
+	  <c:unzip href="hello-world.zip" file="pics/welt.jpg" dest="somewhere"/>
 	</p:inline>
     </p:input>
    </ltx:unzip-files>

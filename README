@@ -1,1 +1,7 @@
 unzip extension for calabash
+
+to compile the source code
+~/git/calabash-unzip> javac -cp "lib/calabash.jar:lib/saxon9he.jar:./" UnZip.java
+
+to run it
+~/git/calabash-unzip> java -cp "lib/calabash.jar:lib/saxon9he.jar:./" com.xmlcalabash.drivers.Main -c ltx-config.xml ltx-example.xproc

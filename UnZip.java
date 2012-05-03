@@ -59,11 +59,78 @@ public class UnZip
 	    String result;
 	    try {
 		XdmNode query_doc = mySource.read();
-		//System.out.println(query_doc);
 		XdmNode unzip = getChild(query_doc, "c", "http://www.w3.org/ns/xproc-step", "unzip");
-		System.out.println(unzip.getAttributeValue(new QName("href")));
-		System.out.println(unzip.getAttributeValue(new QName("file")));
-		result = "<result>working</result>";
+
+		//getting attributes of c:unzip
+		//variable names equal attribute names
+		String href = "";
+		String file = "";
+		String dest = "";
+
+		if(unzip.getAttributeValue(new QName("href"))!=null) 
+		    href = unzip.getAttributeValue(new QName("href"));
+		if(unzip.getAttributeValue(new QName("file"))!=null) 
+		    file = unzip.getAttributeValue(new QName("file"));
+		if(unzip.getAttributeValue(new QName("dest"))!=null) 
+		    dest = unzip.getAttributeValue(new QName("dest"));
+		
+
+
+		if(dest!="") {
+		    File folder = new File(dest);
+		    if(! folder.exists()) folder.mkdir(); 
+		}
+
+		final int BUFFER = 2048;
+		BufferedOutputStream bos = null;
+		FileInputStream fis = new FileInputStream(href);
+		ZipInputStream zis = new ZipInputStream(new BufferedInputStream(fis));
+		ZipEntry entry;
+
+		result = "<files>";
+		//without given fileNode extract everything
+		if(file.equals("")) {
+		    System.out.println("HIER");
+		    while((entry = zis.getNextEntry()) != null) {
+			System.out.println("Extracting: " +entry);
+			int count;
+			byte data[] = new byte[BUFFER];
+
+			if(entry.isDirectory()) {
+			    File dir = new File (dest + "/" + entry);
+			    if (!dir.exists()) dir.mkdir();
+			} else {
+			    FileOutputStream fos = new FileOutputStream(dest + "/" + entry.getName());
+			    result += "<file>" + entry.getName() + "</file>";
+			    bos = new BufferedOutputStream(fos, BUFFER);
+			    while ((count = zis.read(data, 0, BUFFER)) != -1) {
+				bos.write(data, 0, count);
+			    }
+			    bos.flush();
+			    bos.close();
+			}
+		    }
+		} else {
+		    while((entry = zis.getNextEntry()) != null) {
+			if(file.equals(entry.getName())) {
+			    System.out.println("Extracting: " +entry);
+			    createDir(entry.getName(),dest);
+			    int count;
+			    byte data[] = new byte[BUFFER];
+
+			    FileOutputStream fos = new FileOutputStream(dest + "/" + entry.getName());
+			    result += "<file>" + entry.getName() + "</file>";
+			    bos = new BufferedOutputStream(fos, BUFFER);
+			    while ((count = zis.read(data, 0, BUFFER)) != -1) {
+				bos.write(data, 0, count);
+			    }
+			    bos.flush();
+			    bos.close();
+			}
+		    }
+		}
+		zis.close();
+		result += "</files>";
 	    } catch(Exception e) {
 		result = "<error>FEHLER</error>";
 		e.printStackTrace();
@@ -73,6 +140,18 @@ public class UnZip
 	    XdmNode doc = builder.build(src);
 
 	    myResult.write(doc);
+	}
+
+
+	/**
+	 * Helper to create directory structure
+	 */
+	public static void createDir(String dirname, String dest) {
+	    String[] path = dirname.split("/");
+	    for(int i=0; i<=(path.length-2);i++) {
+		File dir = new File (dest + "/" + path[i]);
+		if (!dir.exists()) dir.mkdir();
+	    }
 	}
 
     /**
