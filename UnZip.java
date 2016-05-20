@@ -90,14 +90,16 @@ public class UnZip
 		result = "<files>";
 		//without given fileNode extract everything
 		if(file.equals("")) {
-		    System.out.println("HIER");
+		    //System.out.println("HIER");
 		    while((entry = zis.getNextEntry()) != null) {
-			System.out.println("Extracting: " +entry);
+			System.out.println("Extracting1: " +entry);
+
 			int count;
 			byte data[] = new byte[BUFFER];
 
 			if(entry.isDirectory()) {
 			    File dir = new File (dest + "/" + entry);
+			    result += "<directory>" + entry.getName() + "</directory>";
 			    if (!dir.exists()) dir.mkdir();
 			} else {
 			    FileOutputStream fos = new FileOutputStream(dest + "/" + entry.getName());
@@ -113,7 +115,7 @@ public class UnZip
 		} else {
 		    while((entry = zis.getNextEntry()) != null) {
 			if(file.equals(entry.getName())) {
-			    System.out.println("Extracting: " +entry);
+			    System.out.println("Extracting2: " +entry);
 			    createDir(entry.getName(),dest);
 			    int count;
 			    byte data[] = new byte[BUFFER];
